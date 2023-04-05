@@ -15,32 +15,16 @@
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 
-#define SSID "Sseml_Sera"
-#define PASS "Password1!"
+#include "LapsanaSensorler.h"
+#include "LapsanaConfig.h"
 
-#include <DHT.h> //Sıcaklık ve nem sensörü kütüphanesi - indirmek için https://cdn.demirdelen.net/dht
-#define DHT_PIN D5 //Sensör pini
-
-#include <MQ2.h> //Gaz sensörü kütüphanesi - indirmek için https://cdn.demirdelen.net/mq2
-
-//Multiplexer pinleri
-//Toprak Nem    : (C0) : S0 ve S1 LOW
-//Işık Seviyesi : (C1) : S0 HIGH, S1 LOW
-//Gaz Sensörü   : (C2) : S0 LOW, S1 HIGH
-#define MUX_PIN A0
-#define MUX_S0 D6
-#define MUX_S1 D7
-
-#define SENSOR_INTERVAL 10000 //ölçüm aralığı
-#define STATUS_LED D8 //durum LED'i
-
-#define ISTEK_URL "http://192.168.16.88/e-seracik/node.php"
+LapsanaSensorler sensorlerr();
 
 DHT dht; //Sıcaklık ve nem sensörü tanımı
 bool dhtDurum = false; //ölçüm başarılı ise true
 float nem, sicaklik;
 
-MQ2 mq2(MUX_PIN); //Gaz sensörü tanımı
+/* MQ2 mq2(MUX_PIN); //Gaz sensörü tanımı */
 float raw, lpg, co, duman;
 
 int isik, toprakNem;
@@ -209,22 +193,22 @@ void loop() {
 
     //seriYazdir();
 
-    String istek = SUNUCU_ADI;
+    /* String istek = SUNUCU_ADI;
     http.begin(client, istek.c_str()); 
     int responseCode = http.GET();
     Serial.println(responseCode, 1);
-    Serial.println(http.getString());
+    Serial.println(http.getString()); */
   }
 }
 
 #pragma region Veri Gönderme
 
-bool veriGonder() {
+/* bool veriGonder() {
   WiFiClient client;
   HTTPClient http;
 
   String istek = ISTEK_URL + 
-}
+} */
 
 #pragma endregion
 
