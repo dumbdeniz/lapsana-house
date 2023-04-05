@@ -12,12 +12,20 @@
 #define MUX_LDR2 D7
 #define MUX_TNEM D8
 
+//Su seviyesi sensörü pini
+#define SU_SEVIYE_PIN D0
+
 //Sensör açıldıktan sonra doğru ölçüm alabilmesi için ısınma süresi. (dk)
 //Önerilen süre 15-20, 30 dakika. Eğer yakın bir zamanda kullanılmışsa bu 5 dakikaya düşürülebilir.
 #define MQ2_ISINMA_SURESI 5
 
 //Isınma süresini atlamak için 3V'a bağlanacak pin.
+//Isınma süresini 0 olarak ayarlayarakta bu işlem atlanabilir.
 #define MQ2_ISINMA_ATLAMA D0
+
+//Alınan analog ölçümler için ne kadar ölçüm alınıp ortalanmalı ve ne kadar beklenmeli
+#define ANALOG_ORNEK_SAYISI 5
+#define ANALOG_ORNEK_BEKLEME 100
 
 //Ölçüm ve veri gönderimi aralığı
 #define SENSOR_INTERVAL 10000

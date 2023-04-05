@@ -8,7 +8,7 @@ enum class Sensor {
 };
 
 enum SensorDurum {
-  TAMAM, HATA, OLCUYOR, ISINIYOR
+  TAMAM, HATA, ISINIYOR
 };
 
 class LapsanaSensorler {
@@ -17,7 +17,27 @@ class LapsanaSensorler {
 
     void init();
 
-    float sicaklik();
+    void mq2Denetle();
+
+    float sicaklik(bool);
+
+    float nem(bool);
+
+    float gaz();
+
+    float lpg();
+
+    float co();
+
+    float duman();
+
+    float isik();
+
+    float toprakNem();
+
+    bool suSeviyesi();
+    
+    SensorDurum durum(Sensor sensor);
 
   private:
     void mux(Sensor sensor);
@@ -25,6 +45,8 @@ class LapsanaSensorler {
     void dhtDurumYenidenDene();
 
     void dhtOlcumYenidenDene(float *olcum, bool sicaklik);
+
+    float analogOrnekle();
 };
 
 #endif

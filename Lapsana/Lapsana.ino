@@ -50,5 +50,7 @@ void loop() {
 
   if (simdikiMillis - oncekiMillis >= SENSOR_INTERVAL) {
     oncekiMillis = simdikiMillis;
+
+    sensorler.mq2Denetle(); //Gaz sensörü ısındı mı?
   }
 }
