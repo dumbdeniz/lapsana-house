@@ -19,7 +19,7 @@ LapsanaSensorler sensorler;
 unsigned long oncekiMillis = 0;
 
 void setup() {
-  //Sensörleri hazırla
+  //Sensörleri hazırla - X
   //Cihazları kapalı konuma getir
   //Wi-Fi bağlantısı kur
 
@@ -38,7 +38,6 @@ void loop() {
   
   //Zamanı Kontrol Et : Kaç saniyede bir bildirim yapılacak
     //Ölçümleri yap
-      //havaSicaklikVeNem_Olc();
     //Veriyi şifrele
     //Ölçümleri token (api anahtarı) ile gönder
     //Geri dönen değerleri oku
