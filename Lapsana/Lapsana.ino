@@ -23,16 +23,13 @@
 
 #include <MQ2.h> //Gaz sensörü kütüphanesi - indirmek için https://cdn.demirdelen.net/mq2
 
-//Multiplexer pinleri
-//Toprak Nem    : (C0) : S0 ve S1 LOW
-//Işık Seviyesi : (C1) : S0 HIGH, S1 LOW
-//Gaz Sensörü   : (C2) : S0 LOW, S1 HIGH
 #define MUX_PIN A0
-#define MUX_S0 D6
-#define MUX_S1 D7
+#define MUX_MQ2 D6
+#define MUX_LDR D7
+#define MUX_TNEM D8
 
 #define SENSOR_INTERVAL 10000 //ölçüm aralığı
-#define STATUS_LED D8 //durum LED'i
+#define STATUS_LED D4 //durum LED'i
 
 #define ISTEK_URL "http://192.168.16.88/e-seracik/node.php"
 
@@ -65,15 +62,17 @@ void blink() {
 }
 
 void muxDegis(sensorler sensor) {
-  int s0 = 0, s1 = 0;
+  int d1 = 0, d2 = 0, d3 = 0;
 
   switch (sensor) {
-    case LDR: s0 = 1; break; //1 - 0
-    case MQ2: s1 = 1; break; //0 - 1
+    case MQ2: d1 = 1; break;
+    case LDR: d2 = 1; break;
+    case TOPRAK_NEM: d3 = 1; break;
   }
 
-  digitalWrite(MUX_S0, s0);
-  digitalWrite(MUX_S1, s1);
+  digitalWrite(MUX_MQ2, d1);
+  digitalWrite(MUX_LDR, d2);
+  digitalWrite(MUX_TNEM, d3);
   delay(100);
 }
 
@@ -124,7 +123,7 @@ void seriYazdir() {
   Serial.print(" - Işık     : ");
   Serial.println(isik);
 
-  Serial.println("\n T. Nem:");
+  Serial.println("\n Toprak Nem:");
 
   Serial.print(" - Değer    : ");
   Serial.println(toprakNem);
@@ -139,8 +138,9 @@ void setup() {
   //Cihazları kapalı konuma getir
   //Wi-Fi bağlantısı kur
 
-  pinMode(MUX_S0, OUTPUT);
-  pinMode(MUX_S1, OUTPUT);
+  pinMode(MUX_MQ2, OUTPUT);
+  pinMode(MUX_LDR, OUTPUT);
+  pinMode(MUX_TNEM, OUTPUT);
 
   delay(100); //ESP başlangıç mesajını bekle (tamamen gereksiz, seri monitör iyi gözüksün diye)
 
@@ -207,24 +207,24 @@ void loop() {
     isikSeviyesi();
     toprakNemSeviyesi();
 
-    //seriYazdir();
+    seriYazdir();
 
-    String istek = SUNUCU_ADI;
+    /* String istek = SUNUCU_ADI;
     http.begin(client, istek.c_str()); 
     int responseCode = http.GET();
     Serial.println(responseCode, 1);
-    Serial.println(http.getString());
+    Serial.println(http.getString()); */
   }
 }
 
 #pragma region Veri Gönderme
 
-bool veriGonder() {
+/* bool veriGonder() {
   WiFiClient client;
   HTTPClient http;
 
   String istek = ISTEK_URL + 
-}
+} */
 
 #pragma endregion
 
