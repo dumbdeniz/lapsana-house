@@ -11,9 +11,11 @@
 //
 // MEB Bilgi ve Beceri yarışması için "Lapsana House" sketch'i
 
+#include "LapsanaWiFi.h"
 #include "LapsanaSensorler.h"
 #include "LapsanaConfig.h"
 
+LapsanaWiFi wifi;
 LapsanaSensorler sensorler;
 
 unsigned long oncekiMillis = 0;
@@ -21,22 +23,24 @@ unsigned long oncekiMillis = 0;
 void setup() {
   //Sensörleri hazırla - X
   //Cihazları kapalı konuma getir
-  //Wi-Fi bağlantısı kur
+  //Wi-Fi bağlantısı kur - X
 
   delay(100); //ESP başlangıç mesajını bekle (tamamen gereksiz, seri monitör iyi gözüksün diye)
 
   Serial.begin(9600);
   Serial.println("\nsetup() -----------");
     
-  sensorler.init(); //sensörleri hazırla
+  wifi.init(); //Wi-Fi bağlantısı kur
+
+  sensorler.init(); //Sensörleri hazırla
 
   Serial.println("-------------------");
 }
 
 void loop() {
-  //Bağlantı var mı kontrol et ; Bağlantı oluncaya kadar tekrar dene. Bu sırada Kırmızı led yak.
+  //Bağlantı var mı kontrol et ; Bağlantı oluncaya kadar tekrar dene. Bu sırada Kırmızı led yak. - X
   
-  //Zamanı Kontrol Et : Kaç saniyede bir bildirim yapılacak
+  //Zamanı Kontrol Et : Kaç saniyede bir bildirim yapılacak - X
     //Ölçümleri yap
     //Veriyi şifrele
     //Ölçümleri token (api anahtarı) ile gönder
@@ -44,7 +48,9 @@ void loop() {
     //Şifreli ise çöz
     //Değerlere göre cihazları çalıştır / Zorla çalıştırma varsa çalıştır
   //
-
+  
+  wifi.denetle(); //loop sırasında wifi bağlantısı koparsa tekrar gelene kadar uyar
+  
   const unsigned long simdikiMillis = millis();
 
   if (simdikiMillis - oncekiMillis >= SENSOR_INTERVAL) {

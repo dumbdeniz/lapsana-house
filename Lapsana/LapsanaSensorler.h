@@ -13,8 +13,6 @@ enum SensorDurum {
 
 class LapsanaSensorler {
   public:
-    LapsanaSensorler();
-
     void init();
 
     void mq2Denetle();

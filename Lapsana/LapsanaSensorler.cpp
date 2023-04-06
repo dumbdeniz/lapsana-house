@@ -11,10 +11,6 @@ MQ2 mq2(MUX_PIN); //Gaz sensörü tanımı
 //Sensör durumları, hata var mı, yok mu vb. kontrol etmek için;
 SensorDurum dhtDurum = TAMAM, mq2Durum = ISINIYOR, ldrDurum = TAMAM, toprakNemDurum = TAMAM, suSeviyeDurum = TAMAM;
 
-LapsanaSensorler::LapsanaSensorler() {
-  //boş
-}
-
 #pragma region Public Kodlar
 
 void LapsanaSensorler::init() {
