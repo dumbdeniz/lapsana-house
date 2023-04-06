@@ -49,7 +49,7 @@ void LapsanaSensorler::mq2Denetle() {
   }
 }
 
-float LapsanaSensorler::sicaklik(bool yenidenDene = true) {
+float LapsanaSensorler::sicaklik(bool yenidenDene) {
   if (dhtDurum != TAMAM && yenidenDene) {
     dhtDurumYenidenDene();
     if (dhtDurum != TAMAM) return -1;
@@ -66,7 +66,7 @@ float LapsanaSensorler::sicaklik(bool yenidenDene = true) {
   return sicaklik;
 }
 
-float LapsanaSensorler::nem(bool yenidenDene = true) {
+float LapsanaSensorler::nem(bool yenidenDene) {
   if (dhtDurum != TAMAM && yenidenDene) {
     dhtDurumYenidenDene();
     if (dhtDurum != TAMAM) return -1;

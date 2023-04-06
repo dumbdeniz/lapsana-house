@@ -11,6 +11,7 @@
 //
 // MEB Bilgi ve Beceri yarışması için "Lapsana House" sketch'i
 
+#include "LapsanaUtils.h"
 #include "LapsanaWiFi.h"
 #include "LapsanaSensorler.h"
 #include "LapsanaConfig.h"
@@ -18,12 +19,16 @@
 LapsanaWiFi wifi;
 LapsanaSensorler sensorler;
 
+//ölçülen değerleri depolamak için
+float sicaklik, nem, gaz, lpg, co, duman, isik, toprakNem;
+
+//Sensörlerin durumları
+SensorDurum dhtDurumu, mq2Durumu;
+
 unsigned long oncekiMillis = 0;
 
 void setup() {
-  //Sensörleri hazırla - X
   //Cihazları kapalı konuma getir
-  //Wi-Fi bağlantısı kur - X
 
   delay(100); //ESP başlangıç mesajını bekle (tamamen gereksiz, seri monitör iyi gözüksün diye)
 
@@ -38,16 +43,11 @@ void setup() {
 }
 
 void loop() {
-  //Bağlantı var mı kontrol et ; Bağlantı oluncaya kadar tekrar dene. Bu sırada Kırmızı led yak. - X
-  
-  //Zamanı Kontrol Et : Kaç saniyede bir bildirim yapılacak - X
-    //Ölçümleri yap
-    //Veriyi şifrele
-    //Ölçümleri token (api anahtarı) ile gönder
-    //Geri dönen değerleri oku
-    //Şifreli ise çöz
-    //Değerlere göre cihazları çalıştır / Zorla çalıştırma varsa çalıştır
-  //
+  //Veriyi şifrele
+  //Ölçümleri token (api anahtarı) ile gönder
+  //Geri dönen değerleri oku
+  //Şifreli ise çöz
+  //Değerlere göre cihazları çalıştır / Zorla çalıştırma varsa çalıştır
   
   wifi.denetle(); //loop sırasında wifi bağlantısı koparsa tekrar gelene kadar uyar
   
@@ -57,5 +57,24 @@ void loop() {
     oncekiMillis = simdikiMillis;
 
     sensorler.mq2Denetle(); //Gaz sensörü ısındı mı?
+
+    //Sıcaklık ve nem için false parametre vererek yeniden deneme kapatilabilir
+    dhtDurumu = sensorler.durum(Sensor::DHT11);
+    sicaklik = sensorler.sicaklik(true);
+    nem = sensorler.nem(true);
+
+    //Gaz sensörünün durumunu kontrol et, eğer ısınmışsa ölçümleri al
+    mq2Durumu = sensorler.durum(Sensor::MQ2);
+    if (mq2Durumu == TAMAM) {
+      gaz = sensorler.gaz();
+      lpg = sensorler.lpg();
+      co = sensorler.co();
+      duman = sensorler.duman();
+    }
+
+    isik = sensorler.isik();
+    toprakNem = sensorler.toprakNem();
+
+    seriYazdir(dhtDurumu == TAMAM, mq2Durumu == TAMAM, sicaklik, nem, gaz, lpg, co, duman, isik, toprakNem);
   }
 }
