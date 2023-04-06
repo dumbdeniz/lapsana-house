@@ -11,251 +11,70 @@
 //
 // MEB Bilgi ve Beceri yarışması için "Lapsana House" sketch'i
 
-#include <ESP8266WiFi.h> //Wifi kütüphanesi
-#include <ESP8266HTTPClient.h>
-#include <WiFiClient.h>
+#include "LapsanaUtils.h"
+#include "LapsanaWiFi.h"
+#include "LapsanaSensorler.h"
+#include "LapsanaConfig.h"
 
-#define SSID "Sseml_Sera"
-#define PASS "Password1!"
+LapsanaWiFi wifi;
+LapsanaSensorler sensorler;
 
-#include <DHT.h> //Sıcaklık ve nem sensörü kütüphanesi - indirmek için https://cdn.demirdelen.net/dht
-#define DHT_PIN D5 //Sensör pini
+//ölçülen değerleri depolamak için
+float sicaklik, nem, gaz, lpg, co, duman, isik, toprakNem;
 
-#include <MQ2.h> //Gaz sensörü kütüphanesi - indirmek için https://cdn.demirdelen.net/mq2
-
-#define MUX_PIN A0
-#define MUX_MQ2 D6
-#define MUX_LDR D7
-#define MUX_TNEM D8
-
-#define SENSOR_INTERVAL 10000 //ölçüm aralığı
-#define STATUS_LED D4 //durum LED'i
-
-#define ISTEK_URL "http://192.168.16.88/e-seracik/node.php"
-
-DHT dht; //Sıcaklık ve nem sensörü tanımı
-bool dhtDurum = false; //ölçüm başarılı ise true
-float nem, sicaklik;
-
-MQ2 mq2(MUX_PIN); //Gaz sensörü tanımı
-float raw, lpg, co, duman;
-
-int isik, toprakNem;
+//Sensörlerin durumları
+SensorDurum dhtDurumu, mq2Durumu;
 
 unsigned long oncekiMillis = 0;
 
-//daha okunabilir bir şekilde sensorler arası geçiş için
-enum sensorler { 
-  DHT11, MQ2, LDR, TOPRAK_NEM
-};
-
-#pragma region Yardımcı Kodlar
-
-//Göz kırp ;)
-void blink() {
-  for(int i = 1; i <= 2; i++) {
-    digitalWrite(STATUS_LED, HIGH);
-    delay(100);
-    digitalWrite(STATUS_LED, LOW);
-    delay(100);
-  }
-}
-
-void muxDegis(sensorler sensor) {
-  int d1 = 0, d2 = 0, d3 = 0;
-
-  switch (sensor) {
-    case MQ2: d1 = 1; break;
-    case LDR: d2 = 1; break;
-    case TOPRAK_NEM: d3 = 1; break;
-  }
-
-  digitalWrite(MUX_MQ2, d1);
-  digitalWrite(MUX_LDR, d2);
-  digitalWrite(MUX_TNEM, d3);
-  delay(100);
-}
-
-bool wifiBaglan() {
-  WiFi.mode(WIFI_STA); //Modu istasyon olarak ayarla
-  WiFi.begin(SSID, PASS); //Wi-Fi ağına bağlan
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.print(".");
-  }
-
-  return WiFi.isConnected(); //bağlanmışsa true, herhangi bir sorun olmuşsa false
-}
-
-void seriYazdir() {
-  Serial.println("\nloop() ------------");
-    
-  Serial.println(" DHT:");
-    
-  Serial.print(" - Durum    : ");
-  Serial.println(dhtDurum ? "OK" : "HATA");
-
-  if (dhtDurum) {
-    Serial.print(" - Sıcaklık : ");
-    Serial.println(sicaklik);
-
-    Serial.print(" - Nem      : ");
-    Serial.println(nem);
-  }
-    
-  Serial.println("\n MQ2:");
-
-  Serial.print(" - RAW      : ");
-  Serial.println(raw);
-    
-  Serial.print(" - LPG      : ");
-  Serial.println(lpg);
-
-  Serial.print(" - CO       : ");
-  Serial.println(co);
-
-  Serial.print(" - Duman    : ");
-  Serial.println(duman);
-
-  Serial.println("\n LDR:");
-
-  Serial.print(" - Işık     : ");
-  Serial.println(isik);
-
-  Serial.println("\n Toprak Nem:");
-
-  Serial.print(" - Değer    : ");
-  Serial.println(toprakNem);
-
-  Serial.println("-------------------");
-}
-
-#pragma endregion
-
 void setup() {
-  //Sensörleri hazırla
   //Cihazları kapalı konuma getir
-  //Wi-Fi bağlantısı kur
-
-  pinMode(MUX_MQ2, OUTPUT);
-  pinMode(MUX_LDR, OUTPUT);
-  pinMode(MUX_TNEM, OUTPUT);
 
   delay(100); //ESP başlangıç mesajını bekle (tamamen gereksiz, seri monitör iyi gözüksün diye)
 
   Serial.begin(9600);
   Serial.println("\nsetup() -----------");
-
-  Serial.print("SSID : ");
-  Serial.println(SSID);
-
-  bool wifiSonuc = wifiBaglan();
-  if (!wifiSonuc) {
-    Serial.println("Başarısız");
-
-    //reset atılana kadar uyar
-    while(true) {
-      blink();
-      delay(1000);
-    }
-  }
-  
-  Serial.println("Bağlandı");
-
-  Serial.print("IP : ");
-  Serial.println(WiFi.localIP()); 
     
-  dht.setup(DHT_PIN, DHT::DHT11); //DHT11'i hazırla
+  wifi.init(); //Wi-Fi bağlantısı kur
 
-  muxDegis(MQ2); //gaz sensörüne geç
-  mq2.begin(); //sensörü hazırla ve kalibre et
+  sensorler.init(); //Sensörleri hazırla
 
   Serial.println("-------------------");
 }
 
 void loop() {
-  //Bağlantı var mı kontrol et ; Bağlantı oluncaya kadar tekrar dene. Bu sırada Kırmızı led yak.
+  //Veriyi şifrele
+  //Ölçümleri token (api anahtarı) ile gönder
+  //Geri dönen değerleri oku
+  //Şifreli ise çöz
+  //Değerlere göre cihazları çalıştır / Zorla çalıştırma varsa çalıştır
   
-  //Zamanı Kontrol Et : Kaç saniyede bir bildirim yapılacak
-    //Ölçümleri yap
-      //havaSicaklikVeNem_Olc();
-    //Veriyi şifrele
-    //Ölçümleri token (api anahtarı) ile gönder
-    //Geri dönen değerleri oku
-    //Şifreli ise çöz
-    //Değerlere göre cihazları çalıştır / Zorla çalıştırma varsa çalıştır
-  //
-
-  //loop sırasında wifi bağlantısı koparsa tekrar gelene kadar uyar
-  //ESP kayıtlı bir ağın bağlantısı koparsa kendisi otomatik geri bağlanır, bu olana kadar uyaralım.
-  while(!WiFi.isConnected()) {
-    blink();
-    delay(1000);
-  }
-
+  wifi.denetle(); //loop sırasında wifi bağlantısı koparsa tekrar gelene kadar uyar
+  
   const unsigned long simdikiMillis = millis();
 
-  //her ölçüm aralığında
   if (simdikiMillis - oncekiMillis >= SENSOR_INTERVAL) {
     oncekiMillis = simdikiMillis;
 
-    
+    sensorler.mq2Denetle(); //Gaz sensörü ısındı mı?
 
-    sicaklikVeNem();
-    gazSeviyesi();
-    isikSeviyesi();
-    toprakNemSeviyesi();
+    //Sıcaklık ve nem için false parametre vererek yeniden deneme kapatilabilir
+    dhtDurumu = sensorler.durum(Sensor::DHT11);
+    sicaklik = sensorler.sicaklik(true);
+    nem = sensorler.nem(true);
 
-    seriYazdir();
+    //Gaz sensörünün durumunu kontrol et, eğer ısınmışsa ölçümleri al
+    mq2Durumu = sensorler.durum(Sensor::MQ2);
+    if (mq2Durumu == TAMAM) {
+      gaz = sensorler.gaz();
+      lpg = sensorler.lpg();
+      co = sensorler.co();
+      duman = sensorler.duman();
+    }
 
-    /* String istek = SUNUCU_ADI;
-    http.begin(client, istek.c_str()); 
-    int responseCode = http.GET();
-    Serial.println(responseCode, 1);
-    Serial.println(http.getString()); */
+    isik = sensorler.isik();
+    toprakNem = sensorler.toprakNem();
+
+    seriYazdir(dhtDurumu == TAMAM, mq2Durumu == TAMAM, sicaklik, nem, gaz, lpg, co, duman, isik, toprakNem);
   }
 }
-
-#pragma region Veri Gönderme
-
-/* bool veriGonder() {
-  WiFiClient client;
-  HTTPClient http;
-
-  String istek = ISTEK_URL + 
-} */
-
-#pragma endregion
-
-#pragma region Sensor Olcümleri
-
-void sicaklikVeNem() {
-  dhtDurum = dht.getStatusString() == "OK";
-  
-  nem = dhtDurum ? dht.getHumidity() : 0;
-  sicaklik = dhtDurum ? dht.getTemperature() : 0;  
-}
-
-void gazSeviyesi() {
-  muxDegis(MQ2);
-
-  raw = analogRead(MUX_PIN);
-  lpg = mq2.readLPG();
-  co = mq2.readCO();
-  duman = mq2.readSmoke();
-}
-
-void isikSeviyesi() {
-  muxDegis(LDR);
-
-  isik = analogRead(MUX_PIN);
-}
-
-void toprakNemSeviyesi() {
-  muxDegis(TOPRAK_NEM);
-
-  toprakNem = analogRead(MUX_PIN);
-}
-
-#pragma endregion
