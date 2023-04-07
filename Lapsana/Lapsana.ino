@@ -34,10 +34,11 @@ void setup() {
 
   Serial.begin(9600);
   Serial.println("\nsetup() -----------");
-    
-  wifi.init(); //Wi-Fi bağlantısı kur
+  
+  sifrele((char*)"Deneme");
+  /* wifi.init(); //Wi-Fi bağlantısı kur
 
-  sensorler.init(); //Sensörleri hazırla
+  sensorler.init(); //Sensörleri hazırla */
 
   Serial.println("-------------------");
 }

@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "mbedtls\aes.h"
 
 #include "LapsanaUtils.h" //C++ header dosyası
 #include "LapsanaConfig.h" //Ayarları içeren dosya
@@ -58,4 +59,23 @@ void seriYazdir(bool dhtDurumu, bool mq2Durumu, float sicaklik, float nem, float
   Serial.println(toprakNem);
 
   Serial.println("-------------------");
+}
+
+void sifrele(char* yazi) {
+  unsigned char sifrelenen[16];
+
+  //AES şifrelemeyi hazırla
+  mbedtls_aes_context aes;
+  mbedtls_aes_init(&aes);
+
+  //Şifreleme anahtarını ayarla
+  mbedtls_aes_setkey_enc( &aes, (const unsigned char*) AES_KEY, strlen(AES_KEY) * 8 );
+
+  //Girilen yaziyi şifrele
+  mbedtls_aes_crypt_ecb(&aes, MBEDTLS_AES_ENCRYPT, (const unsigned char*)yazi, sifrelenen);
+
+  //AES şifreleme kaynaklarını temizle
+  mbedtls_aes_free( &aes );
+
+  Serial.println((char*)sifrelenen);
 }

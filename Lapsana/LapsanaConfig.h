@@ -3,13 +3,13 @@
 #define PASS "Password1!"
 
 //Sıcaklık ve nem sensörü pini
-#define DHT_PIN D4
+#define DHT_PIN D5
 
 //Multiplexer pinleri
 #define MUX_PIN A0
-#define MUX_MQ2 D5
-#define MUX_LDR D6
-#define MUX_LDR2 D7
+#define MUX_MQ2 D1
+#define MUX_LDR D2
+#define MUX_LDR2 D3
 #define MUX_TNEM D8
 
 //Su seviyesi sensörü pini
@@ -41,3 +41,7 @@
 
 //Sunucuya erişmek için kullanılacak API anahtarı
 #define API_KEY "deniz3169"
+
+//Verileri şifrelemek için kullanılan ortak anahtar
+//AES-128 - 16 harflik!
+#define AES_KEY "abcdefghijklmnop"
