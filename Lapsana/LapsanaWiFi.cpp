@@ -1,5 +1,7 @@
 #include <Arduino.h> //Arduino kütüphanesi
 #include <ESP8266WiFi.h> //Wifi kütüphanesi
+#include <ESP8266HTTPClient.h> //HTTP client
+#include <WiFiClientSecureBearSSL.h>
 
 #include "LapsanaWiFi.h" //C++ header dosyası
 #include "LapsanaConfig.h" //Ayarları içeren dosya
@@ -42,6 +44,52 @@ void LapsanaWiFi::denetle() {
     Serial.println("blink()");
     delay(1000);
   }
+}
+
+int LapsanaWiFi::httpsGonder() {
+  //Wi-Fi bağlantısını kontrol et
+  if (!WiFi.isConnected()) {
+    Serial.println("- Wi-Fi bağlantısı yok.");
+    return -1;
+  }
+
+  std::unique_ptr<BearSSL::WiFiClientSecure> client(new BearSSL::WiFiClientSecure);
+  //client->setFingerprint(fingerprint_sni_cloudflaressl_com);
+  client->setInsecure();
+
+  HTTPClient https;
+
+  //Bağlantı kurulabildi mi?
+  //https://www.howsmyssl.com/a/check - önce SSL deneyelim
+  if (!https.begin(*client, ISTEK_URL)) {
+    Serial.println("- Bağlantı kurulamadı.");
+    return -1;
+  }
+
+  //verileri ekle
+  //https.addHeader("Content-Type", "application/json");
+  //https.addHeader("Content", "{}");
+  //https.addHeader("api_key", API_KEY);
+
+  //isteği gönder
+  int code = https.GET();
+  if (code < 0) {
+    Serial.println("- İstek gönderilirken bir sorun oluştu.");
+    return -1;
+  }
+
+  Serial.print("- HTTP Kodu: ");
+  Serial.println(code);
+
+  if (code != HTTP_CODE_OK && code != HTTP_CODE_MOVED_PERMANENTLY) {
+    Serial.println("- Beklenen yanıt alınamadı.");
+    return -1;
+  }
+
+  Serial.print("- HTTP Yanıt:");
+  Serial.println(https.getString());
+
+  return code;
 }
 
 #pragma endregion

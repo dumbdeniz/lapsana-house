@@ -38,3 +38,6 @@
 
 //Verilerin gönderileceği sunucu adresi
 #define ISTEK_URL "http://192.168.16.88/e-seracik/node.php"
+
+//Sunucuya erişmek için kullanılacak API anahtarı
+#define API_KEY "deniz3169"

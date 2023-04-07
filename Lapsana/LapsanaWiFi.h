@@ -8,6 +8,8 @@ class LapsanaWiFi {
     void init();
 
     void denetle();
+
+    int httpsGonder();
 };
 
 #endif
