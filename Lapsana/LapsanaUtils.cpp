@@ -15,6 +15,33 @@ void blink() {
   }
 }
 
+void json(char* cikis, const SensorDegerler &degerler, const SensorDurumlar &durumlar) {
+  char jsonBuffer[256];
+  
+  int sicaklik = durumlar.dht11 == TAMAM ? static_cast<int>(degerler.sicaklik) : -1;
+  int nem = durumlar.dht11 == TAMAM ? static_cast<int>(degerler.nem) : -1;
+  int gaz = durumlar.mq2 == TAMAM ? static_cast<int>(degerler.gaz) : -1;
+  int isik = durumlar.ldr == TAMAM ? static_cast<int>(degerler.gaz) : -1;
+  int toprakNem = durumlar.toprakNem == TAMAM ? static_cast<int>(degerler.toprakNem) : -1;
+  auto suSeviyesi = degerler.suSeviyesi ? "true" : "false";
+
+  //Örnek veriler (daha cihazlar eklenmedi)
+  auto isitici = "false";
+  auto lamba = "true";
+  auto pompa = "true";
+  auto fan = "false";
+  auto pencere = "false";
+
+  sprintf(jsonBuffer, JSON_FORMAT, 
+    sicaklik, nem, gaz, isik, toprakNem, suSeviyesi, 
+      durumlar.dht11, durumlar.mq2, durumlar.ldr, durumlar.toprakNem,
+        isitici, lamba, pompa, fan, pencere
+  );
+
+  for(int i=0; i < 256; ++i)
+    cikis[i] = jsonBuffer[i];
+}
+
 void seriYazdir(SensorDegerler degerler, SensorDurumlar durumlar) {
   Serial.println("\nloop() ------------");
     

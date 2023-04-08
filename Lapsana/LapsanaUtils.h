@@ -7,6 +7,8 @@
 
 void blink();
 
+void json(char* cikis, const SensorDegerler &degerler, const SensorDurumlar &durumlar);
+
 void seriYazdir(SensorDegerler degerler, SensorDurumlar durumlar);
 
 #endif
