@@ -8,41 +8,51 @@ enum class Sensor {
 };
 
 enum SensorDurum {
-  TAMAM, HATA, ISINIYOR
+  TAMAM = 1, ISINIYOR = 0, HATA = -1
+};
+
+struct SensorDegerler {
+  float sicaklik;
+  float nem;
+  float gaz;
+  float isik;
+  float toprakNem;
+  bool suSeviyesi;
+};
+
+struct SensorDurumlar {
+  int dht11;
+  int mq2;
+  int ldr;
+  int toprakNem;
 };
 
 class LapsanaSensorler {
   public:
     void init();
 
-    void mq2Denetle();
-
-    float sicaklik(bool);
-
-    float nem(bool);
-
-    float gaz();
-
-    float lpg();
-
-    float co();
-
-    float duman();
-
-    float isik();
-
-    float toprakNem();
-
-    bool suSeviyesi();
-    
-    SensorDurum durum(Sensor sensor);
+    void hallet(SensorDegerler &degerler, SensorDurumlar &durumlar);
 
   private:
+    void sicaklik(bool);
+
+    void nem(bool);
+
+    void gaz();
+
+    void isik();
+
+    void toprakNem();
+
+    bool suSeviyesi();
+
     void mux(Sensor sensor);
+
+    void mq2Denetle();
 
     void dhtDurumYenidenDene();
 
-    void dhtOlcumYenidenDene(float *olcum, bool sicaklik);
+    void dhtOlcumYenidenDene(bool sicaklik);
 
     float analogOrnekle();
 };

@@ -4,6 +4,7 @@
 #include <WiFiClientSecureBearSSL.h>
 
 #include "LapsanaWiFi.h" //C++ header dosyası
+#include "LapsanaUtils.h"
 #include "LapsanaConfig.h" //Ayarları içeren dosya
 
 #pragma region Public Kodlar
@@ -33,7 +34,7 @@ void LapsanaWiFi::init() {
 
   //Reset atılıncıya kadar sorun olduğunu bildir
   while(true) {
-    Serial.println("blink()");
+    blink();
     delay(1000);
   }
 }
@@ -41,7 +42,7 @@ void LapsanaWiFi::init() {
 void LapsanaWiFi::denetle() {  
   //ESP tekrar ağa bağlanana kadar sorun olduğunu bildir
   while(!WiFi.isConnected()) { 
-    Serial.println("blink()");
+    blink();
     delay(1000);
   }
 }
