@@ -46,8 +46,8 @@ void LapsanaSensorler::hallet(SensorDegerler &degerler, SensorDurumlar &durumlar
 
   //Sıcaklık ve nemi ölç
   //Yeniden denemeyi kapatmak için parametre olarak false verilmeli
-  sicaklik(true);
-  nem(true);
+  sicaklik(false);
+  nem(false);
 
   //MQ2 ısınma durumunu kontrol et, eğer ısınmışsa ölçümleri al
   mq2Denetle();
@@ -90,12 +90,13 @@ void LapsanaSensorler::sicaklik(bool yenidenDene) {
   _sicaklik = _dht.getTemperature();
 
   //ölçüm başarısızsa tekrar dene
-  if (isnan(_sicaklik) && yenidenDene) {
-    dhtOlcumYenidenDene(true);
-    if (isnan(_sicaklik)) {
-      _dhtDurum = HATA;
+  if (isnan(_sicaklik)) {
+    if (yenidenDene) {
+      dhtOlcumYenidenDene(true);
+      if (isnan(_sicaklik)) _dhtDurum = HATA;
       return;
     }
+    _dhtDurum = HATA;
   }
 }
 
@@ -108,12 +109,13 @@ void LapsanaSensorler::nem(bool yenidenDene) {
   _nem = _dht.getHumidity();
 
   //ölçüm başarısızsa tekrar dene
-  if (isnan(_nem) && yenidenDene) {
-    dhtOlcumYenidenDene(false);
-    if (isnan(_nem)) {
-      _dhtDurum = HATA;
+  if (isnan(_nem)) {
+    if (yenidenDene) {
+      dhtOlcumYenidenDene(false);
+      if (isnan(_nem)) _dhtDurum = HATA;
       return;
     }
+    _dhtDurum = HATA;
   }
 }
 
@@ -122,10 +124,7 @@ void LapsanaSensorler::gaz() {
 
   mux(Sensor::MQ2);
 
-  float olcumler = 0.0;
-  olcumler += analogOrnekle();
-
-  _gaz = olcumler / ANALOG_ORNEK_SAYISI;
+  _gaz = analogOrnekle() / ANALOG_ORNEK_SAYISI;
 
   if (_gaz <= ANALOG_HATA_SINIRI) _mq2Durum = HATA;
 }
@@ -149,10 +148,7 @@ void LapsanaSensorler::isik() {
 void LapsanaSensorler::toprakNem() {
   mux(Sensor::TOPRAK_NEM);
 
-  float olcumler = 0.0;
-  olcumler += analogOrnekle();
-
-  _toprakNem = olcumler / ANALOG_ORNEK_SAYISI;
+  _toprakNem = analogOrnekle() / ANALOG_ORNEK_SAYISI;
 
   if (_toprakNem <= ANALOG_HATA_SINIRI) _toprakNemDurum = HATA;
 }

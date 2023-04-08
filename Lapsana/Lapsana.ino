@@ -50,7 +50,7 @@ void loop() {
   
   const unsigned long simdikiMillis = millis();
 
-  if (simdikiMillis - oncekiMillis >= SENSOR_INTERVAL) {
+  if (simdikiMillis - oncekiMillis >= SENSOR_ARALIK) {
     oncekiMillis = simdikiMillis;
 
     sensorler.hallet(degerler, durumlar);

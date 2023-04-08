@@ -41,7 +41,7 @@
 #define ANALOG_HATA_SINIRI 15
 
 //Ölçüm ve veri gönderimi aralığı
-#define SENSOR_INTERVAL 10000
+#define SENSOR_ARALIK 10000
 
 //Bir sorun olması durumda tekrar deneme sayısı
 #define YENIDEN_DENEME 3
