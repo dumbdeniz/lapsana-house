@@ -19,22 +19,19 @@
 LapsanaWiFi wifi;
 LapsanaSensorler sensorler;
 
-//ölçülen değerleri depolamak için
-float sicaklik, nem, gaz, lpg, co, duman, isik, toprakNem;
-
-//Sensörlerin durumları
-SensorDurum dhtDurumu, mq2Durumu;
+SensorDegerler degerler;
+SensorDurumlar durumlar;
 
 unsigned long oncekiMillis = 0;
 
 void setup() {
   //Cihazları kapalı konuma getir
 
-  delay(100); //ESP başlangıç mesajını bekle (tamamen gereksiz, seri monitör iyi gözüksün diye)
+  delay(1000); //ESP başlangıç mesajını bekle (tamamen gereksiz, seri monitör iyi gözüksün diye)
 
   Serial.begin(9600);
   Serial.println("\nsetup() -----------");
-    
+  
   wifi.init(); //Wi-Fi bağlantısı kur
 
   sensorler.init(); //Sensörleri hazırla
@@ -56,25 +53,8 @@ void loop() {
   if (simdikiMillis - oncekiMillis >= SENSOR_INTERVAL) {
     oncekiMillis = simdikiMillis;
 
-    sensorler.mq2Denetle(); //Gaz sensörü ısındı mı?
+    sensorler.hallet(degerler, durumlar);
 
-    //Sıcaklık ve nem için false parametre vererek yeniden deneme kapatilabilir
-    dhtDurumu = sensorler.durum(Sensor::DHT11);
-    sicaklik = sensorler.sicaklik(true);
-    nem = sensorler.nem(true);
-
-    //Gaz sensörünün durumunu kontrol et, eğer ısınmışsa ölçümleri al
-    mq2Durumu = sensorler.durum(Sensor::MQ2);
-    if (mq2Durumu == TAMAM) {
-      gaz = sensorler.gaz();
-      lpg = sensorler.lpg();
-      co = sensorler.co();
-      duman = sensorler.duman();
-    }
-
-    isik = sensorler.isik();
-    toprakNem = sensorler.toprakNem();
-
-    seriYazdir(dhtDurumu == TAMAM, mq2Durumu == TAMAM, sicaklik, nem, gaz, lpg, co, duman, isik, toprakNem);
+    seriYazdir(degerler, durumlar);
   }
 }

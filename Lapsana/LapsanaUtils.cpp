@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "LapsanaSensorler.h"
 
 #include "LapsanaUtils.h" //C++ header dosyası
 #include "LapsanaConfig.h" //Ayarları içeren dosya
@@ -14,48 +15,52 @@ void blink() {
   }
 }
 
-void seriYazdir(bool dhtDurumu, bool mq2Durumu, float sicaklik, float nem, float gaz, float lpg, float co, float duman, float isik, float toprakNem) {
+void seriYazdir(SensorDegerler degerler, SensorDurumlar durumlar) {
   Serial.println("\nloop() ------------");
     
   Serial.println(" DHT:");
     
   Serial.print(" - Durum    : ");
-  Serial.println(dhtDurumu ? "TAMAM" : "HATA");
+  Serial.println(durumlar.dht11 == TAMAM ? "TAMAM" : "HATA");
 
-  if (dhtDurumu) {
+  if (durumlar.dht11 == TAMAM) {
     Serial.print(" - Sıcaklık : ");
-    Serial.println(sicaklik);
+    Serial.println(degerler.sicaklik);
 
     Serial.print(" - Nem      : ");
-    Serial.println(nem);
+    Serial.println(degerler.nem);
   }
     
   Serial.println("\n MQ2:");
 
   Serial.print(" - Durum    : ");
-  Serial.println(mq2Durumu ? "TAMAM" : "ISINIYOR");
+  Serial.println(durumlar.mq2 == TAMAM ? "TAMAM" : "ISINIYOR");
 
-  Serial.print(" - Gaz      : ");
-  Serial.println(gaz);
-    
-  Serial.print(" - LPG      : ");
-  Serial.println(lpg);
+  if (durumlar.mq2 == 1) {
+    Serial.print(" - Gaz      : ");
+    Serial.println(degerler.gaz);
+  }
 
-  Serial.print(" - CO       : ");
-  Serial.println(co);
-
-  Serial.print(" - Duman    : ");
-  Serial.println(duman);
-
-  Serial.println("\n LDR:");
+  Serial.println("\n LDR:");  
+  
+  Serial.print(" - Durum    : ");
+  Serial.println(durumlar.ldr == TAMAM ? "TAMAM" : "HATA");
 
   Serial.print(" - Işık     : ");
-  Serial.println(isik);
+  Serial.println(degerler.isik);
 
   Serial.println("\n Toprak Nem:");
 
+  Serial.print(" - Durum    : ");
+  Serial.println(durumlar.toprakNem == TAMAM ? "TAMAM" : "HATA");
+
   Serial.print(" - Değer    : ");
-  Serial.println(toprakNem);
+  Serial.println(degerler.toprakNem);
+
+  Serial.println("\n Su Seviyesi:");
+
+  Serial.print(" - Değer    : ");
+  Serial.println(degerler.suSeviyesi == 1 ? "true" : "false");
 
   Serial.println("-------------------");
 }
