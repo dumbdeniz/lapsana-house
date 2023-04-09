@@ -12,8 +12,12 @@
 #define API_KEY "deniz3169"
 
 //Verileri şifrelemek için kullanılan ortak anahtar
-//AES-128 - 16 harflik!
-#define AES_KEY "abcdefghijklmnop"
+//AES-256 - 32 karakterlik
+#define AES_KEY "B&E)H@McQfTjWnZqB&E)H@McQfTjWnZq"
+
+//Verileri şifrelerken algoritmanın kullanacağı IV
+//İdeal olarak rastgele olması gerekirdi, hatta gerekiyor
+#define AES_IV "u8x/A?D(G+KbPeSh"
 
 //Sıcaklık ve nem sensörü pini
 #define DHT_PIN D5
