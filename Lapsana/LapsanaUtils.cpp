@@ -84,7 +84,7 @@ void sifreCoz(char giris[], char* cikis) {
   uint8_t veri[uzunluk];
 
   //url destekleyecek şekilde düzeltilen girişi eski haline çevir
-  for (int i = 0; i < 320; i++) {
+  for (int i = 0; i <= 320; i++) {
     char karakter = giris[i];
 
     if (karakter == '-') karakter = '+';
