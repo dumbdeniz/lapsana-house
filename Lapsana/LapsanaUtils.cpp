@@ -67,7 +67,7 @@ void sifrele(char giris[], char* cikis) {
   base64_encode(sifrelenmis_veri, (char*)veri, uzunluk);
   
   //Çıktı + ve / gibi url desteklemeyen karakter içerdiği için onları düzelt ve çıkışa yaz
-  for(int i = 0; i <= uzunluk; i++) {
+  for(int i = 0; i <= 320; i++) {
     char karakter = sifrelenmis_veri[i];
 
     if (karakter == '+') karakter = '-';
@@ -84,7 +84,7 @@ void sifreCoz(char giris[], char* cikis) {
   uint8_t veri[uzunluk];
 
   //url destekleyecek şekilde düzeltilen girişi eski haline çevir
-  for (int i = 0; i < 512; i++) {
+  for (int i = 0; i < 320; i++) {
     char karakter = giris[i];
 
     if (karakter == '-') karakter = '+';
