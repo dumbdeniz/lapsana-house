@@ -9,6 +9,10 @@ void blink();
 
 void json(char* cikis, const SensorDegerler &degerler, const SensorDurumlar &durumlar);
 
+void sifrele(char giris[], char* cikis);
+
+void sifreCoz(char giris[], char* cikis);
+
 void seriYazdir(SensorDegerler degerler, SensorDurumlar durumlar);
 
 #endif

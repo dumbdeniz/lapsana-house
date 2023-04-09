@@ -1,6 +1,8 @@
 #include <Arduino.h>
+#include <ESP8266WiFi.h>
 #include "LapsanaSensorler.h"
 
+#include "Base64.h"
 #include "LapsanaUtils.h" //C++ header dosyası
 #include "LapsanaConfig.h" //Ayarları içeren dosya
 
@@ -40,6 +42,75 @@ void json(char* cikis, const SensorDegerler &degerler, const SensorDurumlar &dur
 
   for(int i=0; i < 256; ++i)
     cikis[i] = jsonBuffer[i];
+}
+
+void sifrele(char giris[], char* cikis) {
+  int uzunluk = strlen(giris);
+  int bloklar = uzunluk / 16 + 1;
+  uint8_t padding = bloklar * 16 - uzunluk;
+  uint8_t veri[bloklar*16];
+
+  //Girilen değeri bloklara uygun olarak kopyala
+  memcpy(veri, giris, uzunluk);
+
+  //Geri kalanı boşluklarla doldur
+  for (int i = uzunluk; i < bloklar * 16; i++) veri[i] = padding;
+
+  //Şifreleme context'ini ayarla, 32 byte'lık anahtar ile hazırla ve veriyi statik IV ile şifrele
+  br_aes_big_cbcenc_keys encCtx;
+  br_aes_big_cbcenc_init(&encCtx, AES_KEY, 32);
+  br_aes_big_cbcenc_run(&encCtx, (char*)AES_IV, veri, bloklar * 16);
+
+  //Base64 olarak kodla
+  uzunluk = bloklar * 16;
+  char sifrelenmis_veri[base64_enc_len(uzunluk)];
+  base64_encode(sifrelenmis_veri, (char*)veri, uzunluk);
+  
+  //Çıktı + ve / gibi url desteklemeyen karakter içerdiği için onları düzelt ve çıkışa yaz
+  for(int i = 0; i <= uzunluk; i++) {
+    char karakter = sifrelenmis_veri[i];
+
+    if (karakter == '+') karakter = '-';
+    if (karakter == '/') karakter = '_';
+
+    cikis[i] = karakter;
+  }
+}
+
+void sifreCoz(char giris[], char* cikis) {
+  int girisUzunluk = strlen(giris);
+  int uzunluk = base64_dec_len(giris, girisUzunluk);
+  int bloklar = uzunluk / 16;
+  uint8_t veri[uzunluk];
+
+  //url destekleyecek şekilde düzeltilen girişi eski haline çevir
+  for (int i = 0; i < 512; i++) {
+    char karakter = giris[i];
+
+    if (karakter == '-') karakter = '+';
+    if (karakter == '_') karakter = '/';
+
+    giris[i] = karakter;
+  }
+
+  //Base64 kodunu çöz
+  base64_decode((char *)veri, giris, girisUzunluk);
+
+  //Şifre çözme context'ini ayarla, anahtar ve IV'yi hazırla ve şifreyi çöz
+  br_aes_big_cbcdec_keys decCtx;
+  br_aes_big_cbcdec_init(&decCtx, AES_KEY, 32);
+  br_aes_big_cbcdec_run(&decCtx, (char*)AES_IV, veri, bloklar *16);
+
+  //boşluk ve blok boyularını ayarla
+  uint8_t padding = veri[bloklar * 16 -1];
+  uzunluk = bloklar * 16 - padding;
+
+  //çözülmüş veriyi kopyala, sonuna null karakteri ekle
+  char cozulmus_veri[uzunluk + 1];
+  memcpy(cozulmus_veri, veri, uzunluk);
+  cozulmus_veri[uzunluk] = '\0';
+
+  for(int i = 0; i <= uzunluk; i++) cikis[i] = cozulmus_veri[i];
 }
 
 void seriYazdir(SensorDegerler degerler, SensorDurumlar durumlar) {
