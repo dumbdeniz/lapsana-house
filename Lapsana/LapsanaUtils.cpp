@@ -6,6 +6,9 @@
 #include "LapsanaUtils.h" //C++ header dosyası
 #include "LapsanaConfig.h" //Ayarları içeren dosya
 
+//u8x/A?D(G+KbPeSh
+uint8_t sifreleme_iv[16] {0x75, 0x38, 0x78, 0x2F, 0x41, 0x3F, 0x44, 0x28, 0x47, 0x2B, 0x4B, 0x62, 0x50, 0x65, 0x53, 0x68};
+
 void blink() {
   pinMode(DURUM_LED, OUTPUT);
 
@@ -49,9 +52,11 @@ void sifrele(char giris[], char* cikis) {
   int bloklar = uzunluk / 16 + 1;
   uint8_t padding = bloklar * 16 - uzunluk;
   uint8_t veri[bloklar*16];
+  uint8_t iv[16];
 
   //Girilen değeri bloklara uygun olarak kopyala
   memcpy(veri, giris, uzunluk);
+  memcpy(iv, sifreleme_iv, 16);
 
   //Geri kalanı boşluklarla doldur
   for (int i = uzunluk; i < bloklar * 16; i++) veri[i] = padding;
@@ -59,22 +64,15 @@ void sifrele(char giris[], char* cikis) {
   //Şifreleme context'ini ayarla, 32 byte'lık anahtar ile hazırla ve veriyi statik IV ile şifrele
   br_aes_big_cbcenc_keys encCtx;
   br_aes_big_cbcenc_init(&encCtx, AES_KEY, 32);
-  br_aes_big_cbcenc_run(&encCtx, (char*)AES_IV, veri, bloklar * 16);
+  br_aes_big_cbcenc_run(&encCtx, iv, veri, bloklar * 16);
 
   //Base64 olarak kodla
   uzunluk = bloklar * 16;
   char sifrelenmis_veri[base64_enc_len(uzunluk)];
   base64_encode(sifrelenmis_veri, (char*)veri, uzunluk);
   
-  //Çıktı + ve / gibi url desteklemeyen karakter içerdiği için onları düzelt ve çıkışa yaz
-  for(int i = 0; i <= 320; i++) {
-    char karakter = sifrelenmis_veri[i];
-
-    if (karakter == '+') karakter = '-';
-    if (karakter == '/') karakter = '_';
-
-    cikis[i] = karakter;
-  }
+  //Çıkışa yaz
+  for(int i = 0; i <= 320; i++) cikis[i] = sifrelenmis_veri[i];
 }
 
 void sifreCoz(char giris[], char* cikis) {
@@ -82,24 +80,17 @@ void sifreCoz(char giris[], char* cikis) {
   int uzunluk = base64_dec_len(giris, girisUzunluk);
   int bloklar = uzunluk / 16;
   uint8_t veri[uzunluk];
-
-  //url destekleyecek şekilde düzeltilen girişi eski haline çevir
-  for (int i = 0; i <= 320; i++) {
-    char karakter = giris[i];
-
-    if (karakter == '-') karakter = '+';
-    if (karakter == '_') karakter = '/';
-
-    giris[i] = karakter;
-  }
+  uint8_t iv[16];
 
   //Base64 kodunu çöz
   base64_decode((char *)veri, giris, girisUzunluk);
 
+  memcpy(iv, sifreleme_iv, 16);
+
   //Şifre çözme context'ini ayarla, anahtar ve IV'yi hazırla ve şifreyi çöz
   br_aes_big_cbcdec_keys decCtx;
   br_aes_big_cbcdec_init(&decCtx, AES_KEY, 32);
-  br_aes_big_cbcdec_run(&decCtx, (char*)AES_IV, veri, bloklar *16);
+  br_aes_big_cbcdec_run(&decCtx, iv, veri, bloklar *16);
 
   //boşluk ve blok boyularını ayarla
   uint8_t padding = veri[bloklar * 16 -1];
