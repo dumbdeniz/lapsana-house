@@ -4,6 +4,8 @@
 #include <WiFiClientSecureBearSSL.h>
 
 #include "LapsanaWiFi.h" //C++ header dosyası
+#include "LapsanaSensorler.h"
+#include "LapsanaCihazlar.h"
 #include "LapsanaUtils.h"
 #include "LapsanaConfig.h" //Ayarları içeren dosya
 
@@ -47,11 +49,13 @@ void LapsanaWiFi::denetle() {
   }
 }
 
-int LapsanaWiFi::httpsGonder() {
+void LapsanaWiFi::httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar, CihazDurumlar &cihazDurumlar) {
+  Serial.println("\nHTTPS:");
+
   //Wi-Fi bağlantısını kontrol et
   if (!WiFi.isConnected()) {
     Serial.println("- Wi-Fi bağlantısı yok.");
-    return -1;
+    return;
   }
 
   std::unique_ptr<BearSSL::WiFiClientSecure> client(new BearSSL::WiFiClientSecure);
@@ -64,33 +68,64 @@ int LapsanaWiFi::httpsGonder() {
   //https://www.howsmyssl.com/a/check - önce SSL deneyelim
   if (!https.begin(*client, ISTEK_URL)) {
     Serial.println("- Bağlantı kurulamadı.");
-    return -1;
+    return;
   }
 
-  //verileri ekle
-  //https.addHeader("Content-Type", "application/json");
-  //https.addHeader("Content", "{}");
-  //https.addHeader("api_key", API_KEY);
+  //verileri JSON olarak formatla
+  char jsonVeri[256];
+  json(jsonVeri, degerler, durumlar);
+
+  char sifreliVeri[320];
+  sifrele(jsonVeri, sifreliVeri);
+
+  delete[] jsonVeri; //yer aç
+
+  //isteğe verileri ekle
+  https.addHeader("veri", String(sifreliVeri));
+  https.addHeader("api_key", API_KEY);
+
+  delete[] sifreliVeri; //yer aç
 
   //isteği gönder
   int code = https.GET();
   if (code < 0) {
     Serial.println("- İstek gönderilirken bir sorun oluştu.");
-    return -1;
+    return;
   }
 
   Serial.print("- HTTP Kodu: ");
   Serial.println(code);
 
+  //yanit kodu geçerli mi
   if (code != HTTP_CODE_OK && code != HTTP_CODE_MOVED_PERMANENTLY) {
     Serial.println("- Beklenen yanıt alınamadı.");
-    return -1;
+    return;
   }
 
+  //yaniti al
+  char *yanit = (char*)https.getString().c_str();
+  
   Serial.print("- HTTP Yanıt:");
-  Serial.println(https.getString());
+  Serial.println(yanit);
 
-  return code;
+  https.end(); //artık işimiz yok
+
+  char cozulmusVeri[6];
+  sifreCoz(yanit, cozulmusVeri);
+
+  //çözdüğümüz veri geçerli mi
+  if (cozulmusVeri[0] != '1' || cozulmusVeri[0] != '0') {
+    Serial.print("- Yanıt doğru biçimde çözülemedi: ");
+    Serial.println(cozulmusVeri);
+    return;
+  }
+
+  cihazDurumlar.suMotoru = cozulmusVeri[0] == '1' ? true : false;
+  cihazDurumlar.vana = cozulmusVeri[1] == '1' ? true : false;
+  cihazDurumlar.lamba = cozulmusVeri[2] == '1' ? true : false;
+  cihazDurumlar.isitici = cozulmusVeri[3] == '1' ? true : false;
+  cihazDurumlar.fan = cozulmusVeri[4] == '1' ? true : false;
+  cihazDurumlar.pencere = cozulmusVeri[5] == '1' ? true : false;
 }
 
 #pragma endregion

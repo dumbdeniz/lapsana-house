@@ -14,19 +14,20 @@
 #include "LapsanaUtils.h"
 #include "LapsanaWiFi.h"
 #include "LapsanaSensorler.h"
+#include "LapsanaCihazlar.h"
 #include "LapsanaConfig.h"
 
 LapsanaWiFi wifi;
 LapsanaSensorler sensorler;
+LapsanaCihazlar cihazlar;
 
 SensorDegerler degerler;
 SensorDurumlar durumlar;
+CihazDurumlar cihazDurumlar;
 
 unsigned long oncekiMillis = 0;
 
 void setup() {
-  //Cihazları kapalı konuma getir
-
   delay(1000); //ESP başlangıç mesajını bekle (tamamen gereksiz, seri monitör iyi gözüksün diye)
 
   Serial.begin(9600);
@@ -36,14 +37,12 @@ void setup() {
 
   sensorler.init(); //Sensörleri hazırla
 
+  cihazlar.init(); //Cihazları hazırla
+
   Serial.println("-------------------");
 }
 
 void loop() {
-  //Veriyi şifrele
-  //Ölçümleri token (api anahtarı) ile gönder
-  //Geri dönen değerleri oku
-  //Şifreli ise çöz
   //Değerlere göre cihazları çalıştır / Zorla çalıştırma varsa çalıştır
   
   wifi.denetle(); //loop sırasında wifi bağlantısı koparsa tekrar gelene kadar uyar
@@ -53,8 +52,10 @@ void loop() {
   if (simdikiMillis - oncekiMillis >= SENSOR_ARALIK) {
     oncekiMillis = simdikiMillis;
 
-    sensorler.hallet(degerler, durumlar);
+    sensorler.hallet(degerler, durumlar); //ölçümleri al ve değişkenlerde depola
 
-    seriYazdir(degerler, durumlar);
+    seriYazdir(degerler, durumlar); //hata ayıklama için yazdır
+
+    wifi.httpsGonder(degerler, durumlar, cihazDurumlar); //verileri şifreleyip gönder, yanıtı değişkende depola
   }
 }

@@ -31,7 +31,7 @@ void LapsanaSensorler::init() {
 
   //Gaz sensörünün ısınma süresini atlama pini bağlanmışsa geç ve sensörü hazırla, değilse ısınıyor olarak ayarla
   //Isınma süresi içinde herhangi bir ölçüm isteği gelirse sensör ısınana kadar veri göndermez
-  if (digitalRead(MQ2_ISINMA_ATLAMA) || MQ2_ISINMA_SURESI == 0) {
+  if (MQ2_ISINMA_SURESI == 0) {
     _mq2Durum = TAMAM;
     mux(Sensor::MQ2); //sensöre geç
     _mq2.begin();
@@ -180,7 +180,7 @@ void LapsanaSensorler::mq2Denetle() {
     unsigned long isinmaSuresi = MQ2_ISINMA_SURESI * 60 * 1000; //dakika * saniye * milisaniye
 
     //Isınma süresi geçtiyse veya atlandıysa kalibrasyona başla ve sensörü hazırla
-    if (digitalRead(MQ2_ISINMA_ATLAMA) || millis() >= isinmaSuresi) {
+    if (millis() >= isinmaSuresi) {
       mux(Sensor::MQ2);
       _mq2.begin();
       _mq2Durum = TAMAM;
