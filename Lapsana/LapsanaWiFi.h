@@ -2,6 +2,8 @@
 #define LAPSANAWIFI_H
 
 #include <Arduino.h>
+#include "LapsanaSensorler.h"
+#include "LapsanaCihazlar.h"
 
 class LapsanaWiFi {
   public:
@@ -9,7 +11,7 @@ class LapsanaWiFi {
 
     void denetle();
 
-    int httpsGonder();
+    void httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar, CihazDurumlar &cihazDurumlar);
 };
 
 #endif

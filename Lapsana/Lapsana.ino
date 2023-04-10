@@ -43,10 +43,6 @@ void setup() {
 }
 
 void loop() {
-  //Veriyi şifrele
-  //Ölçümleri token (api anahtarı) ile gönder
-  //Geri dönen değerleri oku
-  //Şifreli ise çöz
   //Değerlere göre cihazları çalıştır / Zorla çalıştırma varsa çalıştır
   
   wifi.denetle(); //loop sırasında wifi bağlantısı koparsa tekrar gelene kadar uyar
@@ -56,8 +52,10 @@ void loop() {
   if (simdikiMillis - oncekiMillis >= SENSOR_ARALIK) {
     oncekiMillis = simdikiMillis;
 
-    sensorler.hallet(degerler, durumlar);
+    sensorler.hallet(degerler, durumlar); //ölçümleri al ve değişkenlerde depola
 
-    seriYazdir(degerler, durumlar);
+    seriYazdir(degerler, durumlar); //hata ayıklama için yazdır
+
+    wifi.httpsGonder(degerler, durumlar, cihazDurumlar); //verileri şifreleyip gönder, yanıtı değişkende depola
   }
 }

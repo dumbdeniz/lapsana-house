@@ -1,4 +1,6 @@
 #include <Arduino.h> //Arduino kütüphanesi
+#include "LapsanaSensorler.h"
+#include "LapsanaCihazlar.h"
 
 #include "LapsanaCihazlar.h" //C++ header dosyası
 #include "LapsanaConfig.h" //Ayarları içeren dosya
@@ -9,7 +11,7 @@ void LapsanaCihazlar::init() {
   //cihazları hazırla
 }
 
-void LapsanaCihazlar::hallet(CihazDurumlar durumlar) {
+void LapsanaCihazlar::hallet(CihazDurumlar &durumlar) {
   //duruma göre cihazları aç veya kapat
 }
 
