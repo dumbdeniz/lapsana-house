@@ -23,13 +23,11 @@ LapsanaCihazlar cihazlar;
 
 SensorDegerler degerler;
 SensorDurumlar durumlar;
-CihazDurumlar cihazDurumlar
+CihazDurumlar cihazDurumlar;
 
 unsigned long oncekiMillis = 0;
 
 void setup() {
-  //Cihazları kapalı konuma getir
-
   delay(1000); //ESP başlangıç mesajını bekle (tamamen gereksiz, seri monitör iyi gözüksün diye)
 
   Serial.begin(9600);
@@ -38,6 +36,8 @@ void setup() {
   wifi.init(); //Wi-Fi bağlantısı kur
 
   sensorler.init(); //Sensörleri hazırla
+
+  cihazlar.init(); //Cihazları hazırla
 
   Serial.println("-------------------");
 }

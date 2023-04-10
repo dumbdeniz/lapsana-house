@@ -25,16 +25,17 @@
 #define MUX_LDR2 D3
 #define MUX_TNEM D4
 
+//Dijital Multiplexer pinleri
+#define DMUX_A 0
+#define DMUX_B 0
+#define DMUX_C 0
+
 //Su seviyesi sensörü pini
 #define SU_SEVIYE_PIN D7
 
 //Sensör açıldıktan sonra doğru ölçüm alabilmesi için ısınma süresi. (dk)
 //Önerilen süre 15-20, 30 dakika. Eğer yakın bir zamanda kullanılmışsa bu 5 dakikaya düşürülebilir.
 #define MQ2_ISINMA_SURESI 5
-
-//Isınma süresini atlamak için 3V'a bağlanacak pin.
-//Isınma süresini 0 olarak ayarlayarakta bu işlem atlanabilir.
-#define MQ2_ISINMA_ATLAMA D0 //! AYARLANMADI
 
 //Alınan analog ölçümler için ne kadar ölçüm alınıp ortalanmalı ve ne kadar beklenmeli
 #define ANALOG_ORNEK_SAYISI 3
@@ -51,3 +52,4 @@
 
 //Durum LED'i
 #define DURUM_LED D0 //! AYARLANMADI
+#define DURUM_LED2 D0 //! AYARLANMADI

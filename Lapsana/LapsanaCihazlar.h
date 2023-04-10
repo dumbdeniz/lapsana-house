@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 enum class Cihaz {
-  SU_MOTORU, VANA, LAMBA, ISITICI, FAN, SERVO
+  SU_MOTORU, VANA, LAMBA, ISITICI, FAN, PENCERE
 };
 
 enum CihazDurum {
@@ -12,17 +12,22 @@ enum CihazDurum {
 };
 
 struct CihazDurumlar {
-  int suMotoru;
-  int vana;
-  int lamba;
-  int isitici;
-  int fan;
-  int servo;
+  bool suMotoru;
+  bool vana;
+  bool lamba;
+  bool isitici;
+  bool fan;
+  bool pencere;
 };
 
 class LapsanaCihazlar {
   public:
+    void init();
+
+    void hallet(CihazDurumlar durumlar);
+
   private:
-}
+    void dmux(Cihaz cihaz);
+};
 
 #endif
