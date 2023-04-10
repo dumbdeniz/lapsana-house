@@ -14,13 +14,16 @@
 #include "LapsanaUtils.h"
 #include "LapsanaWiFi.h"
 #include "LapsanaSensorler.h"
+#include "LapsanaCihazlar.h"
 #include "LapsanaConfig.h"
 
 LapsanaWiFi wifi;
 LapsanaSensorler sensorler;
+LapsanaCihazlar cihazlar;
 
 SensorDegerler degerler;
 SensorDurumlar durumlar;
+CihazDurumlar cihazDurumlar
 
 unsigned long oncekiMillis = 0;
 
