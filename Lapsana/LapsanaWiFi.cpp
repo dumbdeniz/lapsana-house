@@ -105,6 +105,7 @@ void LapsanaWiFi::httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar
   Serial.print("- HTTP Yanıt: ");
   Serial.println(yanit);
 
+  //şifreyi çöz
   char cozulmusVeri[16];
   sifreCoz(yanit, cozulmusVeri);
 
@@ -117,12 +118,11 @@ void LapsanaWiFi::httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar
     return;
   }
 
-  cihazDurumlar.suMotoru = cozulmusVeri[0] == '1' ? true : false;
-  cihazDurumlar.vana = cozulmusVeri[1] == '1' ? true : false;
-  cihazDurumlar.lamba = cozulmusVeri[2] == '1' ? true : false;
-  cihazDurumlar.isitici = cozulmusVeri[3] == '1' ? true : false;
-  cihazDurumlar.fan = cozulmusVeri[4] == '1' ? true : false;
-  cihazDurumlar.pencere = cozulmusVeri[5] == '1' ? true : false;
+  cihazDurumlar.isitici = cozulmusVeri[0] == '1' ? true : false;
+  cihazDurumlar.lamba = cozulmusVeri[1] == '1' ? true : false;
+  cihazDurumlar.suMotoru = cozulmusVeri[2] == '1' ? true : false;
+  cihazDurumlar.fan = cozulmusVeri[3] == '1' ? true : false;
+  cihazDurumlar.pencere = cozulmusVeri[4] == '1' ? true : false;
 
   Serial.println("-------------------");
 }

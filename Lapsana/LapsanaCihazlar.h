@@ -6,18 +6,13 @@
 #include "LapsanaCihazlar.h"
 
 enum class Cihaz {
-  SU_MOTORU, VANA, LAMBA, ISITICI, FAN, PENCERE
-};
-
-enum CihazDurum {
-  KAPALI, ACIK
+  ISITICI, LAMBA, SU_MOTORU, FAN, PENCERE
 };
 
 struct CihazDurumlar {
-  bool suMotoru;
-  bool vana;
-  bool lamba;
   bool isitici;
+  bool lamba;
+  bool suMotoru;
   bool fan;
   bool pencere;
 };
@@ -27,9 +22,6 @@ class LapsanaCihazlar {
     void init();
 
     void hallet(CihazDurumlar &durumlar);
-
-  private:
-    void dmux(Cihaz cihaz);
 };
 
 #endif
