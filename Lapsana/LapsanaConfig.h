@@ -3,7 +3,7 @@
 #define PASS "Password1!"
 
 //Verilerin gönderileceği sunucu adresi
-#define ISTEK_URL "https://192.168.16.88/e-seracik/node.php"
+#define ISTEK_URL "https://192.168.16.75/a.php"
 
 //Gönderilecek verileri formatlamak için kullanılacak JSON şablonu
 #define JSON_FORMAT "{\"degerler\":{\"sicaklik\":%d,\"nem\":%d,\"gaz\":%d,\"isik\":%d,\"toprakNem\":%d,\"suSeviye\":%s},\"durum\":{\"sensorler\":{\"dht11\":%d,\"mq2\":%d,\"ldr\":%d,\"toprakNem\":%d},\"cihazlar\":{\"isitici\":%s,\"lamba\":%s,\"pompa\":%s,\"fan\":%s,\"pencere\":%s}}}"

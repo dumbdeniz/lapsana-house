@@ -58,6 +58,7 @@ void LapsanaWiFi::httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar
     return;
   }
 
+  //BearSSL::WiFiClientSecure *client = new BearSSL::WiFiClientSecure();
   std::unique_ptr<BearSSL::WiFiClientSecure> client(new BearSSL::WiFiClientSecure);
   //client->setFingerprint(fingerprint_sni_cloudflaressl_com);
   client->setInsecure();
@@ -78,13 +79,9 @@ void LapsanaWiFi::httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar
   char sifreliVeri[320];
   sifrele(jsonVeri, sifreliVeri);
 
-  delete[] jsonVeri; //yer aç
-
   //isteğe verileri ekle
-  https.addHeader("veri", String(sifreliVeri));
-  https.addHeader("api_key", API_KEY);
-
-  delete[] sifreliVeri; //yer aç
+  https.addHeader("veri", sifreliVeri);
+  https.addHeader("api-key", API_KEY);
 
   //isteği gönder
   int code = https.GET();
@@ -105,16 +102,16 @@ void LapsanaWiFi::httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar
   //yaniti al
   char *yanit = (char*)https.getString().c_str();
   
-  Serial.print("- HTTP Yanıt:");
+  Serial.print("- HTTP Yanıt: ");
   Serial.println(yanit);
+
+  char cozulmusVeri[16];
+  sifreCoz(yanit, cozulmusVeri);
 
   https.end(); //artık işimiz yok
 
-  char cozulmusVeri[6];
-  sifreCoz(yanit, cozulmusVeri);
-
   //çözdüğümüz veri geçerli mi
-  if (cozulmusVeri[0] != '1' || cozulmusVeri[0] != '0') {
+  if (cozulmusVeri[0] != '1' && cozulmusVeri[0] != '0') {
     Serial.print("- Yanıt doğru biçimde çözülemedi: ");
     Serial.println(cozulmusVeri);
     return;
@@ -126,6 +123,8 @@ void LapsanaWiFi::httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar
   cihazDurumlar.isitici = cozulmusVeri[3] == '1' ? true : false;
   cihazDurumlar.fan = cozulmusVeri[4] == '1' ? true : false;
   cihazDurumlar.pencere = cozulmusVeri[5] == '1' ? true : false;
+
+  Serial.println("-------------------");
 }
 
 #pragma endregion

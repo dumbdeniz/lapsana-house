@@ -46,8 +46,8 @@ void LapsanaSensorler::hallet(SensorDegerler &degerler, SensorDurumlar &durumlar
 
   //Sıcaklık ve nemi ölç
   //Yeniden denemeyi kapatmak için parametre olarak false verilmeli
-  sicaklik(false);
-  nem(false);
+  sicaklik(true);
+  nem(true);
 
   //MQ2 ısınma durumunu kontrol et, eğer ısınmışsa ölçümleri al
   mq2Denetle();

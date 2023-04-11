@@ -150,6 +150,4 @@ void seriYazdir(SensorDegerler degerler, SensorDurumlar durumlar) {
 
   Serial.print(" - Değer    : ");
   Serial.println(degerler.suSeviyesi == 1 ? "true" : "false");
-
-  Serial.println("-------------------");
 }
