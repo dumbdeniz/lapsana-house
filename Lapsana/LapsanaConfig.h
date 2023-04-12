@@ -28,7 +28,7 @@
 #define LAMBA_PIN D6
 #define SU_MOTORU_PIN D7
 #define FAN_PIN D3
-#define SERVO_PIN 15 //D8
+#define SERVO_PIN 2 //D4
 
 //Servo çalışma aralığı (pencereye göre kalibre edilmeli)
 #define SERVO_KAPALI 0
