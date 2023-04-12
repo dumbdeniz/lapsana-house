@@ -19,13 +19,15 @@ void LapsanaCihazlar::init() {
   _servo.attach(SERVO_PIN, 500, 2400);
   _servo.write(SERVO_KAPALI);
 
-  //gerekiyorsa digitalWrite ile hepsini kapat.
+  digitalWrite(ISITICI_PIN, HIGH);
+  digitalWrite(LAMBA_PIN, HIGH);
+  digitalWrite(SU_MOTORU_PIN, HIGH);
 }
 
 void LapsanaCihazlar::hallet(CihazDurumlar &durumlar) {
-  digitalWrite(ISITICI_PIN, durumlar.isitici);
-  digitalWrite(LAMBA_PIN, durumlar.lamba);
-  digitalWrite(SU_MOTORU_PIN, durumlar.suMotoru);
+  digitalWrite(ISITICI_PIN, !durumlar.isitici);
+  digitalWrite(LAMBA_PIN, !durumlar.lamba);
+  digitalWrite(SU_MOTORU_PIN, !durumlar.suMotoru);
   digitalWrite(FAN_PIN, durumlar.fan);
   
   _servo.write(durumlar.pencere ? SERVO_ACIK : SERVO_KAPALI);
