@@ -29,7 +29,7 @@ void LapsanaSensorler::init() {
 
   //Gaz sensörünün ısınma süresini atlama pini bağlanmışsa geç ve sensörü hazırla, değilse ısınıyor olarak ayarla
   //Isınma süresi içinde herhangi bir ölçüm isteği gelirse sensör ısınana kadar veri göndermez
-  if (MQ2_ISINMA_SURESI == 0) {
+  if (MQ2_ISINMA_SURESI <= 0) {
     _mq2Durum = TAMAM;
     mux(Sensor::MQ2); //sensöre geç
     _mq2.begin();
@@ -146,16 +146,16 @@ void LapsanaSensorler::toprakNem() {
 bool LapsanaSensorler::suSeviyesi() {
   mux(Sensor::SU_SEVIYE); //su seviyesi sensörüne geç
 
-  return digitalRead(MUX_PIN);
+  return analogRead(MUX_PIN) >= 512;
 }
 
 void LapsanaSensorler::mux(Sensor sensor) {
   int s0 = 0, s1 = 0;
 
   switch (sensor) {
-    case Sensor::LDR: s0 = 1; break;
-    case Sensor::TOPRAK_NEM: s1 = 1; break;
-    case Sensor::SU_SEVIYE: s0 = 1; s1 = 1; break;
+    case Sensor::TOPRAK_NEM: s0 = 1; break;
+    case Sensor::LDR: s1 = 1; break;
+    case Sensor::MQ2: s0 = 1; s1 = 1; break;
   }
 
   digitalWrite(MUX_S0, s0);

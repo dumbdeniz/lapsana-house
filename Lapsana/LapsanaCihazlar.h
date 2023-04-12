@@ -5,7 +5,7 @@
 #include "LapsanaSensorler.h"
 #include "LapsanaCihazlar.h"
 
-enum class Cihaz {
+enum class Cihaz { 
   ISITICI, LAMBA, SU_MOTORU, FAN, PENCERE
 };
 
