@@ -1,20 +1,16 @@
-//  (               )   (         )     (               *      (      (      (             (               )
-//  )\ )         ( /(   )\ )   ( /(     )\ )          (  `     )\ )   )\ )   )\ )          )\ )         ( /(
-// (()/(   (     )\()) (()/(   )\())   (()/(    (     )\))(   (()/(  (()/(  (()/(    (    (()/(   (     )\())
-//  /(_))  )\   ((_)\   /(_)) ((_)\     /(_))   )\   ((_)()\   /(_))  /(_))  /(_))   )\    /(_))  )\   ((_)/
-//  _(_)  ((_)   _((_) (_))    _((_)   (_))_   ((_)  (_()((_) (_))   (_))   (_))_   ((_)  (_))   ((_)   _((_)
-// |   \  | __| | \| | |_ _|  |_  /     |   \  | __| |  \/  | |_ _|  | _ \   |   \  | __| | |    | __| | \| |
-// | |) | | _|  | .` |  | |    / /      | |) | | _|  | |\/| |  | |   |   /   | |) | | _|  | |__  | _|  | .` |
-// |___/  |___| |_|\_| |___|  /___|     |___/  |___| |_|  |_| |___|  |_|_\   |___/  |___| |____| |___| |_|\_|
+//  _                                                       _   _                              
+// | |       __ _   _ __    ___    __ _   _ __     __ _    | | | |   ___    ___   _   _    ___ 
+// | |      / _` | | '_ \  / __|  / _` | | '_ \   / _` |   | |_| |  / _ \  / __| | | | |  / _ \
+// | |___  | (_| | | |_) | \__ \ | (_| | | | | | | (_| |   |  _  | | (_) | \__ \ | |_| | |  __/
+// |_____|  \__,_| | .__/  |___/  \__,_| |_| |_|  \__,_|   |_| |_|  \___/  |___/  \__,_|  \___|
+//                 |_|                                                                         
 //
-// Copyright (c) 2023 Deniz DEMIRDELEN
-//
-// MEB Bilgi ve Beceri yarışması için "Lapsana House" sketch'i
+// Sedat Simavi Endüstri Meslek Lisesi • MEB Bilgi ve Beceri yarışması için "Lapsana House" sketch'i
 
-#include "LapsanaUtils.h"
-#include "LapsanaWiFi.h"
 #include "LapsanaSensorler.h"
 #include "LapsanaCihazlar.h"
+#include "LapsanaUtils.h"
+#include "LapsanaWiFi.h"
 #include "LapsanaConfig.h"
 
 LapsanaWiFi wifi;
@@ -28,34 +24,47 @@ CihazDurumlar cihazDurumlar;
 unsigned long oncekiMillis = 0;
 
 void setup() {
-  delay(1000); //ESP başlangıç mesajını bekle (tamamen gereksiz, seri monitör iyi gözüksün diye)
+  //ESP başlangıç mesajını bekle
+  delay(100); 
 
   Serial.begin(9600);
   Serial.println("\nsetup() -----------");
   
-  wifi.init(); //Wi-Fi bağlantısı kur
+  //Wi-Fi bağlantısı kur
+  wifi.init(); 
 
-  sensorler.init(); //Sensörleri hazırla
+  //Sensörleri hazırla
+  sensorler.init(); 
 
-  cihazlar.init(); //Cihazları hazırla
+  //Cihazları hazırla
+  cihazlar.init(); 
 
   Serial.println("-------------------");
 }
 
 void loop() {
-  wifi.denetle(); //loop sırasında wifi bağlantısı koparsa tekrar gelene kadar uyar
+  //loop sırasında wifi bağlantısı koparsa tekrar gelene kadar uyar
+  wifi.denetle();
   
   const unsigned long simdikiMillis = millis();
 
+  //Sensor ölçüm aralığı geçti mi?
   if (simdikiMillis - oncekiMillis >= SENSOR_ARALIK) {
     oncekiMillis = simdikiMillis;
 
-    sensorler.hallet(degerler, durumlar); //ölçümleri al ve değişkenlerde depola
+    //Ölçümleri al ve değişkenlerde depola
+    sensorler.hallet(degerler, durumlar);
 
-    seriYazdir(degerler, durumlar); //hata ayıklama için yazdır
+    //Hata ayıklama için yazdır
+    sensorlerYazdir(degerler, durumlar);
 
-    wifi.httpsGonder(degerler, durumlar, cihazDurumlar); //verileri şifreleyip gönder, yanıtı değişkende depola
+    //Verileri şifreleyip gönder, yanıtı değişkende depola
+    wifi.httpsGonder(degerler, durumlar, cihazDurumlar);
 
-    cihazlar.hallet(cihazDurumlar); //gelen yanıta göre cihazları açıp kapat
+    //Gelen yanıta göre cihazları açıp kapat
+    cihazlar.hallet(cihazDurumlar);
+
+    //Hata ayıklama için yazdır
+    cihazlarYazdir(cihazDurumlar);
   }
 }

@@ -2,7 +2,9 @@
 #define LAPSANAUTILS_H
 
 #include <Arduino.h>
+
 #include "LapsanaSensorler.h"
+#include "LapsanaCihazlar.h"
 #include "LapsanaConfig.h"
 
 void blink();
@@ -13,6 +15,8 @@ void sifrele(char giris[], char* cikis);
 
 void sifreCoz(char giris[], char* cikis);
 
-void seriYazdir(SensorDegerler degerler, SensorDurumlar durumlar);
+void sensorlerYazdir(SensorDegerler degerler, SensorDurumlar durumlar);
+
+void cihazlarYazdir(CihazDurumlar durumlar);
 
 #endif

@@ -123,8 +123,6 @@ void LapsanaWiFi::httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar
   cihazDurumlar.suMotoru = cozulmusVeri[2] == '1' ? true : false;
   cihazDurumlar.fan = cozulmusVeri[3] == '1' ? true : false;
   cihazDurumlar.pencere = cozulmusVeri[4] == '1' ? true : false;
-
-  Serial.println("-------------------");
 }
 
 #pragma endregion

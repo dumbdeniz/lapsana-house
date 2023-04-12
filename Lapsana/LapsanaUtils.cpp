@@ -1,10 +1,11 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-#include "LapsanaSensorler.h"
 
 #include "Base64.h"
-#include "LapsanaUtils.h" //C++ header dosyası
-#include "LapsanaConfig.h" //Ayarları içeren dosya
+#include "LapsanaSensorler.h"
+#include "LapsanaCihazlar.h"
+#include "LapsanaUtils.h"
+#include "LapsanaConfig.h"
 
 //u8x/A?D(G+KbPeSh
 uint8_t sifreleme_iv[16] {0x75, 0x38, 0x78, 0x2F, 0x41, 0x3F, 0x44, 0x28, 0x47, 0x2B, 0x4B, 0x62, 0x50, 0x65, 0x53, 0x68};
@@ -104,7 +105,7 @@ void sifreCoz(char giris[], char* cikis) {
   for(int i = 0; i <= uzunluk; i++) cikis[i] = cozulmus_veri[i];
 }
 
-void seriYazdir(SensorDegerler degerler, SensorDurumlar durumlar) {
+void sensorlerYazdir(SensorDegerler degerler, SensorDurumlar durumlar) {
   Serial.println("\nloop() ------------");
     
   Serial.println(" DHT:");
@@ -150,4 +151,28 @@ void seriYazdir(SensorDegerler degerler, SensorDurumlar durumlar) {
 
   Serial.print(" - Değer    : ");
   Serial.println(degerler.suSeviyesi == 1 ? "true" : "false");
+}
+
+void cihazlarYazdir(CihazDurumlar durumlar) {
+  Serial.println(" ISITICI:");
+  Serial.print(" - Durum    : ");
+  Serial.println(durumlar.isitici ? "AÇIK" : "KAPALI");
+
+  Serial.println(" LAMBA:");
+  Serial.print(" - Durum    : ");
+  Serial.println(durumlar.lamba ? "AÇIK" : "KAPALI");
+
+  Serial.println(" SU MOTORU:");
+  Serial.print(" - Durum    : ");
+  Serial.println(durumlar.suMotoru ? "AÇIK" : "KAPALI");
+
+  Serial.println(" FAN:");
+  Serial.print(" - Durum    : ");
+  Serial.println(durumlar.fan ? "AÇIK" : "KAPALI");
+
+  Serial.println(" PENCERE:");
+  Serial.print(" - Durum    : ");
+  Serial.println(durumlar.pencere ? "AÇIK" : "KAPALI");
+
+  Serial.println("-------------------");
 }
