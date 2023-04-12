@@ -10,12 +10,12 @@
 uint8_t sifreleme_iv[16] {0x75, 0x38, 0x78, 0x2F, 0x41, 0x3F, 0x44, 0x28, 0x47, 0x2B, 0x4B, 0x62, 0x50, 0x65, 0x53, 0x68};
 
 void blink() {
-  pinMode(DURUM_LED, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
 
   for(int i = 1; i <= 2; i++) {
-    digitalWrite(DURUM_LED, HIGH);
+    digitalWrite(LED_BUILTIN, HIGH);
     delay(100);
-    digitalWrite(DURUM_LED, LOW);
+    digitalWrite(LED_BUILTIN, LOW);
     delay(100);
   }
 }

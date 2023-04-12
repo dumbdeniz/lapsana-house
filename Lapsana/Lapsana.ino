@@ -43,8 +43,6 @@ void setup() {
 }
 
 void loop() {
-  //Değerlere göre cihazları çalıştır / Zorla çalıştırma varsa çalıştır
-  
   wifi.denetle(); //loop sırasında wifi bağlantısı koparsa tekrar gelene kadar uyar
   
   const unsigned long simdikiMillis = millis();
@@ -57,5 +55,7 @@ void loop() {
     seriYazdir(degerler, durumlar); //hata ayıklama için yazdır
 
     wifi.httpsGonder(degerler, durumlar, cihazDurumlar); //verileri şifreleyip gönder, yanıtı değişkende depola
+
+    cihazlar.hallet(cihazDurumlar); //gelen yanıta göre cihazları açıp kapat
   }
 }

@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 enum class Sensor {
-  DHT11, MQ2, LDR, LDR2, TOPRAK_NEM, SU_SEVIYE
+  DHT11, MQ2, LDR, TOPRAK_NEM, SU_SEVIYE
 };
 
 enum SensorDurum {

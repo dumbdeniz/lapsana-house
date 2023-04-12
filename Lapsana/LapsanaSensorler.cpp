@@ -18,10 +18,8 @@ SensorDurum _dhtDurum = TAMAM, _mq2Durum = ISINIYOR, _ldrDurum = TAMAM, _toprakN
 
 void LapsanaSensorler::init() {
   //Multiplexer pinlerini ayarla
-  pinMode(MUX_MQ2, OUTPUT);
-  pinMode(MUX_LDR, OUTPUT);
-  pinMode(MUX_LDR2, OUTPUT);
-  pinMode(MUX_TNEM, OUTPUT);
+  pinMode(MUX_S0, OUTPUT);
+  pinMode(MUX_S1, OUTPUT);
 
   //DHT11'i hazırla
   _dht.setup(DHT_PIN, DHT::DHT11);
@@ -31,7 +29,7 @@ void LapsanaSensorler::init() {
 
   //Gaz sensörünün ısınma süresini atlama pini bağlanmışsa geç ve sensörü hazırla, değilse ısınıyor olarak ayarla
   //Isınma süresi içinde herhangi bir ölçüm isteği gelirse sensör ısınana kadar veri göndermez
-  if (MQ2_ISINMA_SURESI == 0) {
+  if (MQ2_ISINMA_SURESI <= 0) {
     _mq2Durum = TAMAM;
     mux(Sensor::MQ2); //sensöre geç
     _mq2.begin();
@@ -130,17 +128,9 @@ void LapsanaSensorler::gaz() {
 }
 
 void LapsanaSensorler::isik() {
-  float olcumler = 0.0;
+  mux(Sensor::LDR); //LDR sensörüne geç
 
-  mux(Sensor::LDR); //ilk LDR sensörüne geç
-
-  olcumler += analogOrnekle();
-
-  mux(Sensor::LDR2); //ikinci LDR sensörüne geç
-
-  olcumler += analogOrnekle();
-
-  _isik = olcumler / (ANALOG_ORNEK_SAYISI * 2);
+  _isik = analogOrnekle() / ANALOG_ORNEK_SAYISI;
 
   if (_isik <= ANALOG_HATA_SINIRI) _ldrDurum = HATA;
 }
@@ -154,23 +144,22 @@ void LapsanaSensorler::toprakNem() {
 }
 
 bool LapsanaSensorler::suSeviyesi() {
-  return digitalRead(SU_SEVIYE_PIN);
+  mux(Sensor::SU_SEVIYE); //su seviyesi sensörüne geç
+
+  return analogRead(MUX_PIN) >= 512;
 }
 
 void LapsanaSensorler::mux(Sensor sensor) {
-  int d1 = 0, d2 = 0, d3 = 0, d4 = 0;
+  int s0 = 0, s1 = 0;
 
   switch (sensor) {
-    case Sensor::MQ2: d1 = 1; break;
-    case Sensor::LDR: d2 = 1; break;
-    case Sensor::LDR2: d3 = 1; break;
-    case Sensor::TOPRAK_NEM: d4 = 1; break;
+    case Sensor::TOPRAK_NEM: s0 = 1; break;
+    case Sensor::LDR: s1 = 1; break;
+    case Sensor::MQ2: s0 = 1; s1 = 1; break;
   }
 
-  digitalWrite(MUX_MQ2, d1);
-  digitalWrite(MUX_LDR, d2);
-  digitalWrite(MUX_LDR2, d3);
-  digitalWrite(MUX_TNEM, d4);
+  digitalWrite(MUX_S0, s0);
+  digitalWrite(MUX_S1, s1);
 
   delay(10); //değişene kadar kısa bir bekleme
 }
