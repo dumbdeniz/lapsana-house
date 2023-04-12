@@ -24,10 +24,10 @@
 #define DHT_PIN D2
 
 //Cihaz pinleri
-#define ISITICI_PIN D3
-#define LAMBA_PIN D5
-#define SU_MOTORU_PIN D6
-#define FAN_PIN D7
+#define ISITICI_PIN D5
+#define LAMBA_PIN D6
+#define SU_MOTORU_PIN D7
+#define FAN_PIN D3
 #define SERVO_PIN 15 //D8
 
 //Servo çalışma aralığı (pencereye göre kalibre edilmeli)
