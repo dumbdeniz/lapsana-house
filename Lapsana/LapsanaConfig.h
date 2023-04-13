@@ -3,7 +3,7 @@
 #define PASS "Password1!"
 
 //Verilerin gönderileceği sunucu adresi
-#define ISTEK_URL "https://192.168.16.75/a.php"
+#define ISTEK_URL "https://192.168.16.102/e-seracik/test.php"
 
 //Gönderilecek verileri formatlamak için kullanılacak JSON şablonu
 #define JSON_FORMAT "{\"degerler\":{\"sicaklik\":%d,\"nem\":%d,\"gaz\":%d,\"isik\":%d,\"toprakNem\":%d,\"suSeviye\":%s},\"durum\":{\"sensorler\":{\"dht11\":%d,\"mq2\":%d,\"ldr\":%d,\"toprakNem\":%d},\"cihazlar\":{\"isitici\":%s,\"lamba\":%s,\"pompa\":%s,\"fan\":%s,\"pencere\":%s}}}"
@@ -24,15 +24,15 @@
 #define DHT_PIN D2
 
 //Cihaz pinleri
-#define ISITICI_PIN D5
+#define ISITICI_PIN D7
 #define LAMBA_PIN D6
-#define SU_MOTORU_PIN D7
+#define SU_MOTORU_PIN D5
 #define FAN_PIN D3
 #define SERVO_PIN 2 //D4
 
 //Servo çalışma aralığı (pencereye göre kalibre edilmeli)
-#define SERVO_KAPALI 0
-#define SERVO_ACIK 90
+#define SERVO_KAPALI 120
+#define SERVO_ACIK 0
 
 //Sensör açıldıktan sonra doğru ölçüm alabilmesi için ısınma süresi. (dk)
 //Önerilen süre 15-20, 30 dakika. Eğer yakın bir zamanda kullanılmışsa bu 5 dakikaya düşürülebilir.
@@ -46,7 +46,7 @@
 #define ANALOG_HATA_SINIRI 20
 
 //Ölçüm ve veri gönderimi aralığı
-#define SENSOR_ARALIK 5000
+#define SENSOR_ARALIK 10000
 
 //Bir sorun olması durumda tekrar deneme sayısı
 #define YENIDEN_DENEME 3
