@@ -22,13 +22,28 @@ void LapsanaCihazlar::init() {
   digitalWrite(ISITICI_PIN, HIGH);
   digitalWrite(LAMBA_PIN, HIGH);
   digitalWrite(SU_MOTORU_PIN, HIGH);
+
+  analogWrite(FAN_PIN, 0);
 }
 
 void LapsanaCihazlar::hallet(CihazDurumlar &durumlar) {
   digitalWrite(ISITICI_PIN, !durumlar.isitici);
   digitalWrite(LAMBA_PIN, !durumlar.lamba);
   digitalWrite(SU_MOTORU_PIN, !durumlar.suMotoru);
-  digitalWrite(FAN_PIN, durumlar.fan);
-  
-  _servo.write(durumlar.pencere ? SERVO_ACIK : SERVO_KAPALI);
+
+  analogWrite(FAN_PIN, durumlar.fan ? FAN_HIZ : 0);
+
+  //yavaşça pencereyi aç
+  for (int i = SERVO_KAPALI; i > SERVO_ACIK && durumlar.pencere; i -= SERVO_ADIM) {
+    _servo.write(i);
+    delay(SERVO_ARALIK);
+  }
+
+  //yavaşça pencereyi kapat
+  for (int i = SERVO_ACIK; i < SERVO_KAPALI && !durumlar.pencere; i += SERVO_ADIM) {
+    _servo.write(i);
+    delay(SERVO_ARALIK);
+  }
+
+  //_servo.write(durumlar.pencere ? SERVO_ACIK : SERVO_KAPALI);
 }

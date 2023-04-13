@@ -64,6 +64,7 @@ void LapsanaWiFi::httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar
   client->setInsecure();
 
   HTTPClient https;
+  https.setTimeout(HTTPS_TIMEOUT);
 
   //Bağlantı kurulabildi mi?
   //https://www.howsmyssl.com/a/check - önce SSL deneyelim
@@ -83,10 +84,14 @@ void LapsanaWiFi::httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar
   https.addHeader("veri", sifreliVeri);
   https.addHeader("api-key", API_KEY);
 
+  //yanıt olarak alınacak header
+  const char* yanitHeader[] = {"yanit"};  
+  https.collectHeaders(yanitHeader, 1);
+
   //isteği gönder
   int code = https.GET();
   if (code < 0) {
-    Serial.println("- İstek gönderilirken bir sorun oluştu.");
+    Serial.println("- İstek gönderilirken bir sorun oluştu.\n");
     return;
   }
 
@@ -94,16 +99,22 @@ void LapsanaWiFi::httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar
   Serial.println(code);
 
   //yanit kodu geçerli mi
-  if (code != HTTP_CODE_OK && code != HTTP_CODE_MOVED_PERMANENTLY) {
-    Serial.println("- Beklenen yanıt alınamadı.");
+  if (code != HTTP_CODE_OK) {
+    Serial.println("- Beklenen yanıt alınamadı.\n");
     return;
   }
 
   //yaniti al
-  char *yanit = (char*)https.getString().c_str();
+  char *yanit = (char*)https.header("yanit").c_str();
   
   Serial.print("- HTTP Yanıt: ");
   Serial.println(yanit);
+
+  //yaniti kontrol et
+  if (yanit == "") {
+    Serial.println("- Beklenen yanıt alınamadı.\n");
+    return;
+  }
 
   //şifreyi çöz
   char cozulmusVeri[16];
@@ -117,6 +128,9 @@ void LapsanaWiFi::httpsGonder(SensorDegerler &degerler, SensorDurumlar &durumlar
     Serial.println(cozulmusVeri);
     return;
   }
+
+  Serial.print("- Çözülmüş yanıt: ");
+  Serial.println(cozulmusVeri);
 
   cihazDurumlar.isitici = cozulmusVeri[0] == '1' ? true : false;
   cihazDurumlar.lamba = cozulmusVeri[1] == '1' ? true : false;
